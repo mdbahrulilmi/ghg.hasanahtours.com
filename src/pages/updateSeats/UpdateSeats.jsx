@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Search, Users, AlertCircle, CheckCircle, XCircle } from "lucide-react";
 import updateSeat from "@/api/updateSeat";
+import Swal from "sweetalert2";
 
 function PackageCard({ pkg, onUpdate, setNotification }) {
   const [seatData, setSeatData] = useState({
@@ -38,6 +39,7 @@ function PackageCard({ pkg, onUpdate, setNotification }) {
         total_booked: bookedPpiu + bookedGhg,
         sisa_seat: Math.max(total - bookedPpiu - bookedGhg, 0),
       });
+      
     } catch (err) {
       console.error(err);
     } finally {
@@ -89,17 +91,24 @@ function PackageCard({ pkg, onUpdate, setNotification }) {
         available_slot
       });
 
-      setNotification({
-        type: "success",
-        message: `Seat paket ${pkg.package_code} berhasil diperbarui`,
+      Swal.fire({
+        title: "Success!",
+        text: "Seat Telah Diupdate!",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
       });
 
       onUpdate();
     } catch (err) {
-      setNotification({
-        type: "error",
-        message: err.message || "Gagal update seat",
-      });
+          Swal.fire({
+            title: "Gagal!",
+            text: err.message || "Gagal update seat",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: false,
+          });
+
     } finally {
       setSaving(false);
     }
@@ -125,10 +134,10 @@ function PackageCard({ pkg, onUpdate, setNotification }) {
       {/* Body */}
       <div className="p-4">
         {loading ? (
-          <div className="text-center py-6">
-            <div className="w-6 h-6 border-2 border-gray-300 border-t-transparent rounded-full animate-spin mx-auto"></div>
-            <p className="text-xs text-gray-500 mt-2">Loading...</p>
-          </div>
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-300 mx-auto mb-4"></div>
+              <p className="text-gray-500 font-medium">Memuat...</p>
+            </div>
         ) : (
           <div className="space-y-3">
             {/* Progress */}
@@ -235,9 +244,9 @@ export default function UpdateSeatsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="w-16 h-16 border-4 border-gray-300 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-300 mx-auto mb-4"></div>
           <p className="text-gray-500 font-medium">Memuat paket...</p>
         </div>
       </div>

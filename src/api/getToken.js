@@ -1,7 +1,7 @@
 async function getToken(){
     try {
     const res = await fetch(
-      "/duft/api/mitra/v2/get-token",
+      "https://be.hasanahtours.com/api/duft/get-token",
       {
         method: "POST",
         headers: {
@@ -13,14 +13,14 @@ async function getToken(){
         }),
       }
     );
-
+    
     const data = await res.json();
 
     if (!res.ok) {
       throw new Error(data.message || "Gagal create package");
     }
 
-    return data.data.token;
+    return data.token;
   } catch (err) {
     console.error("Error:", err.message);
     throw err;

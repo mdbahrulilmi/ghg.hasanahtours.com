@@ -45,11 +45,13 @@ async function createPackage(payload) {
     filled_slot,
     max_slot,
     itinerary,
-    hotels
+    hotels,
+    token,
+    package_id
   };
 
   const res = await fetch(
-    `/duft/api/mitra/v2/create-package`,
+    "https://be.hasanahtours.com/api/duft/create-package",
     {
       method: "POST",
       headers: {
@@ -59,37 +61,24 @@ async function createPackage(payload) {
       body: JSON.stringify(body)
     }
   );
+
   const data = await res.json();
 
-  if (!res.ok) {
+  console.log("[CREATE PACKAGE][RESPONSE]", {
+    httpStatus: res.status,
+    data
+  });
+
+  // 🔥 VALIDASI YANG BENAR
+  if (!res.ok || data.status !== true) {
     throw new Error(data.message || "Gagal create package");
   }
 
-  const bodyDB = {
-    package_id,
-    package_code: data.data.kode_paket,
-    package_name: nama_paket
-
-  }
-
-  const toDB = await fetch(
-    `https://be.hasanahtours.com/api/v1/registered-ghg`,
-    {
-      method: "POST",
-       headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(bodyDB)
-    }
-  );
-  console.log("BODY DARI FRONTEND:", bodyDB);
-  const data_db = await toDB.json();
-
-  if (!toDB.ok) {
-    throw new Error(data_db.message || "Gagal create package");
-  }
-
-  return data_db;
+  // 🔥 RETURN DATA SUPAYA CALLER TAHU SUKSES
+  return {
+    kode_paket: data.kode_paket,
+    message: data.message
+  };
 }
 
 export default createPackage;

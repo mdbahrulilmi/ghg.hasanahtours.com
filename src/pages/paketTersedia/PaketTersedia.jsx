@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Users, Calendar, DollarSign, ArrowRight, Send } from "lucide-react"
 import createPackage from "@/api/createPackage"
 import mapHotelsToGHG from "@/helpers/mapHotelsToGHG"
+import Swal from "sweetalert2"
 
 export default function PaketTersedia() {
   const [paket, setPaket] = useState([])
@@ -99,7 +100,6 @@ export default function PaketTersedia() {
       const seat = seatMap[item.kode_paket]
 
       if (!seat) {
-        alert(`Seat untuk paket ${item.kode_paket} belum siap`)
         return
       }
 
@@ -107,8 +107,8 @@ export default function PaketTersedia() {
       const tgl_berangkat = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`
       const hotels = mapHotelsToGHG(seat.hotels)
 
-        await createPackage({
-          tipe: item.tipe_paket.name,
+      await createPackage({
+          tipe: item.tipe_paket.category,
           nama_paket: item.tipe_paket.name,
           tgl_berangkat: tgl_berangkat,
           jumlah_hari: item.jumlah_hari,
@@ -121,7 +121,7 @@ export default function PaketTersedia() {
           hrgtriple: Math.trunc(item.harga.ber3),
           hrgdouble: Math.trunc(item.harga.ber2),
           hrgperlengkapan: 0,
-          imgpaketumroh: 'https://admin.dreamtour.co/assets/images/gbrpaket/paketumrohdf.jpeg',
+          imgpaketumroh: item.imgpaketumroh ?? 'https://admin.dreamtour.co/assets/images/gbrpaket/paketumrohdf.jpeg',
           available_slot: seat.seat_info.sisa_seat,
           filled_slot: seat.seat_info.booked_ghg + seat.seat_info.booked_ppiu,
           max_slot: seat.seat_info.total_kursi,
@@ -131,10 +131,22 @@ export default function PaketTersedia() {
         })
       }
 
-      alert("Semua paket berhasil dikirim")
+      Swal.fire({
+        title: "Success!",
+        text: "Semua Paket Telah Terkirim ke GHG!",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+      window.location.reload();
     } catch (err) {
-      console.error(err)
-      alert("Gagal kirim paket")
+      Swal.fire({
+        title: "Error!",
+        text: "Paket Gagal Dikirim",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false)
     }

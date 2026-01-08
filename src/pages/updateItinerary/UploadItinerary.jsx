@@ -8,8 +8,9 @@ import {
   Calendar,
 } from "lucide-react";
 import uploadItinerary from "@/api/uploadItinerary";
+import Swal from "sweetalert2";
 
-function PackageCard({ pkg, setNotification }) {
+function PackageCard({ pkg }) {
   const [uploading, setUploading] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -17,20 +18,32 @@ function PackageCard({ pkg, setNotification }) {
     try {
       setUploading(true);
       setSuccess(false);
+
+      Swal.fire({
+        title: "Uploading...",
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading(),
+      });
+
       await uploadItinerary({
         kode_paket: pkg.package_code,
         file,
       });
 
-      setSuccess(true);
-      setNotification({
-        type: "success",
-        message: `Itinerary paket ${pkg.package_code} berhasil diupload`,
+      Swal.fire({
+        icon: "success",
+        title: "Berhasil!",
+        text: `Itinerary paket ${pkg.package_code} berhasil diupload`,
+        timer: 2000,
+        showConfirmButton: false,
       });
+
+      setSuccess(true);
     } catch (err) {
-      setNotification({
-        type: "error",
-        message: err.message || "Upload itinerary gagal",
+      Swal.fire({
+        icon: "error",
+        title: "Gagal!",
+        text: err.message || "Upload itinerary gagal",
       });
     } finally {
       setUploading(false);
@@ -44,7 +57,9 @@ function PackageCard({ pkg, setNotification }) {
         <span className="text-xs bg-emerald-100 text-emerald-800 px-2 py-1 rounded-2xl font-mono">
           {pkg.package_code}
         </span>
-        <h3 className="text-sm font-bold mt-2 text-gray-900">{pkg.package_name}</h3>
+        <h3 className="text-sm font-bold mt-2 text-gray-900">
+          {pkg.package_name}
+        </h3>
       </div>
 
       {/* body */}
@@ -91,7 +106,6 @@ export default function UpdateItineraryPerPackage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     fetchPackages();
@@ -112,6 +126,11 @@ export default function UpdateItineraryPerPackage() {
       setPackages(json.data || []);
     } catch (err) {
       setError(err.message);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.message,
+      });
     } finally {
       setLoading(false);
     }
@@ -124,32 +143,20 @@ export default function UpdateItineraryPerPackage() {
   );
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-14 h-14 border-4 border-gray-400 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">Memuat paket...</p>
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-gray-300 mx-auto mb-4"></div>
+            <p className="text-gray-500 font-medium">Memuat paket...</p>
+          </div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-        <div className="bg-white p-8 rounded-2xl shadow-lg border border-red-200 max-w-md w-full text-center">
-          <XCircle className="w-10 h-10 text-red-600 mx-auto mb-4" />
-          <h3 className="text-xl font-bold text-gray-800 mb-2">
-            Terjadi Kesalahan
-          </h3>
-          <p className="text-red-600 mb-4">{error}</p>
-          <button
-            onClick={fetchPackages}
-            className="w-full py-3 bg-emerald-600 text-white rounded-2xl font-semibold hover:bg-emerald-700"
-          >
-            Coba Lagi
-          </button>
-        </div>
+        <XCircle className="w-10 h-10 text-red-600" />
       </div>
     );
   }
@@ -171,24 +178,6 @@ export default function UpdateItineraryPerPackage() {
             </p>
           </div>
         </div>
-
-        {/* Notification */}
-        {notification && (
-          <div
-            className={`p-4 rounded-2xl border-2 flex items-center gap-3 font-mono ${
-              notification.type === "success"
-                ? "bg-green-50 border-green-200 text-green-800"
-                : "bg-red-50 border-red-200 text-red-800"
-            }`}
-          >
-            {notification.type === "success" ? (
-              <CheckCircle className="w-5 h-5" />
-            ) : (
-              <XCircle className="w-5 h-5" />
-            )}
-            <span>{notification.message}</span>
-          </div>
-        )}
 
         {/* Search */}
         <div className="bg-white rounded-2xl shadow-md p-4 border border-gray-200">
@@ -219,11 +208,7 @@ export default function UpdateItineraryPerPackage() {
           )}
 
           {filteredPackages.map((pkg) => (
-            <PackageCard
-              key={pkg.package_id}
-              pkg={pkg}
-              setNotification={setNotification}
-            />
+            <PackageCard key={pkg.package_id} pkg={pkg} />
           ))}
         </div>
       </div>

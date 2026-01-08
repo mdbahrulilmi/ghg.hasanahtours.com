@@ -16,16 +16,23 @@ import {
   ChevronDown,
   ChevronRight,
   Menu,
-  LogOut,
   User,
   Calendar,
   Repeat,
+  Globe,
+  MapPin,
+  Package,
+  Hotel,
+  Map,
+  BookOpenCheck,
+  Layers,
 } from "lucide-react"
+
 
 function DashboardLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [expandedMenus, setExpandedMenus] = useState({
-    masterData: true,
+    masterGHG: true,
   })
 
   const toggleMenu = (key) =>
@@ -33,8 +40,8 @@ function DashboardLayout() {
 
   const menuStructure = [
     {
-      key: "masterData",
-      label: "Master Data",
+      key: "masterGHG",
+      label: "Master GHG",
       items: [
         { to: "/paket-tersedia", label: "Paket Tersedia", icon: LayoutDashboard },
         { to: "/paket-aktif", label: "Paket Aktif", icon: Plane },
@@ -43,7 +50,29 @@ function DashboardLayout() {
         { to: "/callback-ghg", label: "Callback GHG", icon: Repeat },
       ],
     },
+    {
+      key: "masterHasanahtours",
+      label: "Master Hasanahtours",
+      items: [
+        { to: "/airlines", label: "Airlines", icon: Plane },
+        { to: "/country", label: "Negara", icon: Globe },
+        { to: "/city", label: "Kota", icon: MapPin },
+        { to: "/departure", label: "Keberangkatan", icon: Map },
+        { to: "/landing", label: "Tujuan", icon: Map },
+        { to: "/hotel", label: "Hotel", icon: Hotel },
+        { to: "/package-type", label: "Tipe Paket", icon: Package },
+        { to: "/package", label: "Paket", icon: Layers },
+      ],
+    },
+    {
+      key: "transaksi",
+      label: "Transaksi",
+      items: [
+        { to: "/booking", label: "Booking", icon: BookOpenCheck },
+      ],
+    },
   ]
+
 
   return (
     <div className="flex h-screen w-full bg-gray-50">
