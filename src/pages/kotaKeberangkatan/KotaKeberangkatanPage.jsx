@@ -152,12 +152,6 @@ export default function KotaKeberangkatanPage() {
                   >
                     Edit
                   </button>
-                  <button
-                    onClick={() => handleDelete(city.id)}
-                    className="bg-red-600 text-white px-3 py-1 rounded"
-                  >
-                    Hapus
-                  </button>
                 </td>
               </tr>
             ))}

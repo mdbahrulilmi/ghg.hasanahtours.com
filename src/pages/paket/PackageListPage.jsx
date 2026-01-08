@@ -154,34 +154,6 @@ export default function PackageListPage() {
                       >
                         Edit
                       </button>
-                      <button
-                        onClick={async () => {
-                          if (!confirm("Yakin hapus paket ini?")) return;
-                          try {
-                            const res = await fetch(
-                              `${BASE_URL}/master/package/delete`,
-                              {
-                                method: "POST",
-                                headers: {
-                                  "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify({
-                                  kode_paket: pkg.kode_paket,
-                                }),
-                              }
-                            );
-                            const json = await res.json();
-                            if (!res.ok)
-                              alert(json.message || "Gagal hapus paket");
-                            else fetchPackages();
-                          } catch {
-                            alert("Server error");
-                          }
-                        }}
-                        className="bg-red-600 text-white px-3 py-1 rounded"
-                      >
-                        Hapus
-                      </button>
                     </td>
                   </tr>
                 ))

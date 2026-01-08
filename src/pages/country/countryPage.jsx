@@ -15,6 +15,7 @@ export default function CountryPage() {
     name: "",
   });
 
+  
   const token = localStorage.getItem("tokenAuth");
 
   const fetchCountries = async () => {
@@ -96,7 +97,6 @@ export default function CountryPage() {
     setShowModal(true);
   };
 
-  // 🔍 SEARCH FILTER
   const filteredCountries = countries.filter(
     (item) =>
       item.code?.toLowerCase().includes(search.toLowerCase()) ||

@@ -200,12 +200,6 @@ export default function PackageTypePage() {
                       >
                         Edit
                       </button>
-                      <button
-                        onClick={() => handleDelete(pkg.id)}
-                        className="bg-red-600 text-white px-3 py-1 rounded"
-                      >
-                        Hapus
-                      </button>
                     </td>
                   </tr>
                 ))
@@ -262,13 +256,24 @@ export default function PackageTypePage() {
               <label className="block font-medium mb-1">
                 Kategori Paket
               </label>
-              <input
+             <input
                 className="w-full border px-3 py-2 rounded"
                 value={formData.kategori_paket}
                 onChange={(e) =>
-                  setFormData({ ...formData, kategori_paket: e.target.value })
+                  setFormData({
+                    ...formData,
+                    // hapus semua spasi kalau user paste
+                    kategori_paket: e.target.value.replace(/\s+/g, ""),
+                  })
                 }
+                onKeyDown={(e) => {
+                  if (e.key === " ") {
+                    e.preventDefault(); // cegah spasi diketik
+                  }
+                }}
               />
+
+
             </div>
 
             <div className="mb-4">
