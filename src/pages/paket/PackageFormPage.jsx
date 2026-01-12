@@ -298,14 +298,20 @@ export default function PackageFormPage() {
         />
 
         {["hargaber2","hargaber3","hargaber4","hargabayi"].map((field) => (
-          <FormInput
-            key={field}
-            label={field.replace(/_/g," ").toUpperCase()}
-            type="number"
-            value={formData[field]}
-            onChange={(v) => setFormData({ ...formData, [field]: v })}
-          />
-        ))}
+        <FormInput
+          key={field}
+          label={{
+            hargaber2: "Harga Ber-2 (Double)",
+            hargaber3: "Harga Ber-3 (Triple)",
+            hargaber4: "Harga Ber-4 (Quad)",
+            hargabayi: "Harga Bayi",
+          }[field]}
+          type="number"
+          value={formData[field]}
+          onChange={(v) => setFormData({ ...formData, [field]: v })}
+        />
+      ))}
+
 
         {/** Gambar **/}
         <FormInput
