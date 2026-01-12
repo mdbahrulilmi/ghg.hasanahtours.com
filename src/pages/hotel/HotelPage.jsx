@@ -28,7 +28,9 @@ export default function HotelPage() {
     try {
       const res = await fetch(`${BASE_URL}/master/hotels`);
       const json = await res.json();
-      setHotels(json.data.hotels || []);
+      const sorted = (json.data.hotels || []).sort((a, b) =>
+      a.hotelname.localeCompare(b.hotelname));
+      setHotels(sorted);
     } catch {
       alert("Gagal ambil data hotel");
     } finally {

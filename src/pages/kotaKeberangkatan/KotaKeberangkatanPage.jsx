@@ -20,7 +20,10 @@ export default function KotaKeberangkatanPage() {
     try {
       const res = await fetch(`${BASE_URL}/master/kotaKeberangkatan`);
       const json = await res.json();
-      setCities(json.data || []);
+      const sorted = (json.data || []).sort((a, b) =>
+      a.name.localeCompare(b.name)
+      );
+      setCities(sorted);
     } catch {
       alert("Gagal ambil data kota");
     } finally {

@@ -26,12 +26,12 @@ export default function PackageFormPage() {
     no_penerbangan: "",
     tanggal_berangkat: "",
     kurs_tetap: "",
-    hargaber1: "",
+    hargaber1: 0,
     hargaber2: "",
     hargaber3: "",
     hargaber4: "",
     hargabayi: "",
-    harga_perlengkapan: "",
+    harga_perlengkapan: 0,
     gambar: "",
   });
 
@@ -73,11 +73,10 @@ export default function PackageFormPage() {
 
    const formatDateForInput = (isoString) => {
     if (!isoString) return "";
-    return isoString.split("T")[0]; // ambil YYYY-MM-DD
+    return isoString.split("T")[0];
     };
 
 
-  // Fetch package for edit
   const fetchPackage = async () => {
     if (!isEdit) return;
     try {
@@ -101,12 +100,12 @@ export default function PackageFormPage() {
           no_penerbangan: pkg.penerbangan.no_penerbangan || "",
           tanggal_berangkat: formatDateForInput(pkg.penerbangan.tanggal_berangkat) || "",
           kurs_tetap: pkg.harga?.kurs_tetap || "",
-          hargaber1: pkg.harga?.ber1 || "",
+          hargaber1: 0,
           hargaber2: pkg.harga?.ber2 || "",
           hargaber3: pkg.harga?.ber3 || "",
           hargaber4: pkg.harga?.ber4 || "",
           hargabayi: pkg.harga?.bayi || "",
-          harga_perlengkapan: pkg.harga?.perlengkapan || "",
+          harga_perlengkapan: 0,
           gambar: pkg.gambar || "",
         });
       }
@@ -153,14 +152,14 @@ export default function PackageFormPage() {
       no_penerbangan: formData.no_penerbangan || undefined,
       tanggal_berangkat: formData.tanggal_berangkat || undefined,
       kurs_tetap: formData.kurs_tetap ? Number(formData.kurs_tetap) : undefined,
-      hargaber1: formData.hargaber1 ? Number(formData.hargaber1) : undefined,
+      hargaber1: formData.hargaber1 ? Number(formData.hargaber1) : 0,
       hargaber2: formData.hargaber2 ? Number(formData.hargaber2) : undefined,
       hargaber3: formData.hargaber3 ? Number(formData.hargaber3) : undefined,
       hargaber4: formData.hargaber4 ? Number(formData.hargaber4) : undefined,
       hargabayi: formData.hargabayi ? Number(formData.hargabayi) : undefined,
       harga_perlengkapan: formData.harga_perlengkapan
         ? Number(formData.harga_perlengkapan)
-        : undefined,
+        : 0,
       gambar: formData.gambar || undefined,
     };
 
@@ -298,8 +297,7 @@ export default function PackageFormPage() {
           onChange={(v) => setFormData({ ...formData, kurs_tetap: v })}
         />
 
-        {/** Harga BER1-4, Bayi, Perlengkapan **/}
-        {["hargaber1","hargaber2","hargaber3","hargaber4","hargabayi","harga_perlengkapan"].map((field) => (
+        {["hargaber2","hargaber3","hargaber4","hargabayi"].map((field) => (
           <FormInput
             key={field}
             label={field.replace(/_/g," ").toUpperCase()}

@@ -20,7 +20,10 @@ export default function AirlinesPage() {
     try {
       const res = await fetch(`${BASE_URL}/master/airlines`);
       const json = await res.json();
-      setAirlines(json.data || []);
+      const sorted = (json.data || []).sort((a, b) =>
+      a.airlinesname.localeCompare(b.airlinesname)
+      );
+      setAirlines(sorted);
     } catch (err) {
       alert("Gagal ambil data airlines");
     } finally {

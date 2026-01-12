@@ -23,7 +23,10 @@ export default function CountryPage() {
     try {
       const res = await fetch(`${BASE_URL}/master/country`);
       const json = await res.json();
-      setCountries(json.data || []);
+      const sorted = (json.data || []).sort((a, b) =>
+      a.name.localeCompare(b.name)
+      );
+      setCountries(sorted);
     } catch {
       alert("Gagal ambil data negara");
     } finally {

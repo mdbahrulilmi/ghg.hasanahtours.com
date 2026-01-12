@@ -24,7 +24,10 @@ export default function PackageTypePage() {
     try {
       const res = await fetch(`${BASE_URL}/master/tipePaket`);
       const json = await res.json();
-      setPackageTypes(json.data || []);
+
+      const sorted = (json.data || []).sort((a, b) => b.id - a.id);
+
+    setPackageTypes(sorted);
     } catch {
       alert("Gagal ambil data tipe paket");
     } finally {
@@ -256,22 +259,21 @@ export default function PackageTypePage() {
               <label className="block font-medium mb-1">
                 Kategori Paket
               </label>
-             <input
+             <select
                 className="w-full border px-3 py-2 rounded"
                 value={formData.kategori_paket}
                 onChange={(e) =>
                   setFormData({
                     ...formData,
-                    // hapus semua spasi kalau user paste
-                    kategori_paket: e.target.value.replace(/\s+/g, ""),
+                    kategori_paket: e.target.value,
                   })
                 }
-                onKeyDown={(e) => {
-                  if (e.key === " ") {
-                    e.preventDefault(); // cegah spasi diketik
-                  }
-                }}
-              />
+              >
+                <option value="">-- Pilih Kategori Paket --</option>
+                <option value="Umroh">Umroh</option>
+                <option value="Haji">Haji</option>
+              </select>
+
 
 
             </div>

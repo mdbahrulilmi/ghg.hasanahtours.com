@@ -23,7 +23,10 @@ export default function CitiesPage() {
     try {
       const res = await fetch(`${BASE_URL}/master/cities`);
       const json = await res.json();
-      setCities(json.data || []);
+      const sorted = (json.data || []).sort((a, b) =>
+      a.name.localeCompare(b.name)
+      );
+      setCities(sorted);
     } catch {
       alert("Gagal ambil data city");
     } finally {

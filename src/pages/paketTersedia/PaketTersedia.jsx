@@ -109,7 +109,7 @@ export default function PaketTersedia() {
 
       await createPackage({
           tipe: item.tipe_paket.category,
-          nama_paket: item.tipe_paket.name,
+          nama_paket: item.nama_paket,
           tgl_berangkat: tgl_berangkat,
           jumlah_hari: item.jumlah_hari,
           maskapai: item.airline.name,
@@ -234,7 +234,7 @@ export default function PaketTersedia() {
                     </span>
                   )}
                 </div>
-                <h3 className="font-bold text-lg text-gray-900">{item.tipe_paket.name}</h3>
+                <h3 className="font-bold text-lg text-gray-900">{item.nama_paket}</h3>
               </div>
             </div>
 
@@ -308,7 +308,7 @@ export default function PaketTersedia() {
                                 <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
                                   {item.kode_paket}
                                 </span>
-                                <h4 className="font-bold text-sm text-gray-900 mt-2">{item.tipe_paket.name}</h4>
+                                <h4 className="font-bold text-sm text-gray-900 mt-2">{item.nama_paket}</h4>
                               </div>
                               <button
                                 onClick={(e) => {

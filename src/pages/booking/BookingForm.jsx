@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import updateSeat from "@/api/updateSeat";
+import Swal from "sweetalert2";
+
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -6,7 +9,7 @@ const emptyJamaah = {
   nama: "",
   jenis_kelamin: "",
   no_ktp: "",
-  tanggal_lahir: "", // wajib diisi
+  tanggal_lahir: "",
   tempat_lahir: "",
   alamat: "",
   no_telepon: "",
@@ -22,21 +25,49 @@ export default function BookingForm() {
     { ...emptyJamaah, hubungan_dengan_main: "DIRI SENDIRI" },
   ]);
 
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [loadingPaket, setLoadingPaket] = useState(false);
+
+  const fetchPaket = async (pageNumber = 1) => {
+    setLoadingPaket(true);
+    try {
+      const res = await fetch(
+        `${BASE_URL}/paket?page=${pageNumber}&per_page=10`
+      );
+      const json = await res.json();
+
+      setPaketList(json.data || []);
+      setPage(json.meta?.current_page || 1);
+      setLastPage(json.meta?.last_page || 1);
+    } catch {
+      alert("Gagal ambil data paket");
+    } finally {
+      setLoadingPaket(false);
+    }
+  };
+
   useEffect(() => {
-    fetch(`${BASE_URL}/paket`)
-      .then((res) => res.json())
-      .then((json) => setPaketList(json.data || []))
-      .catch(() => alert("Gagal ambil data paket"));
-  }, []);
+    fetchPaket(page);
+  }, [page]);
+
+  const selectedPaket = paketList.find(
+  (p) => p.kode_paket === kodePaket
+);
 
   const handleJamaahChange = (index, field, value) => {
-    const copy = [...jamaah];
-    copy[index] = { ...copy[index], [field]: value };
-    setJamaah(copy);
+    setJamaah((prev) =>
+      prev.map((j, i) =>
+        i === index ? { ...j, [field]: value } : j
+      )
+    );
   };
 
   const addJamaah = () => {
-    if (jamaah.length >= 10) return alert("Maksimal 10 jamaah");
+    if (jamaah.length >= 10) {
+      alert("Maksimal 10 jamaah");
+      return;
+    }
     setJamaah([...jamaah, { ...emptyJamaah }]);
   };
 
@@ -45,82 +76,176 @@ export default function BookingForm() {
     setJamaah(jamaah.filter((_, i) => i !== index));
   };
 
+  const fetchGHG = async (id) => {
+  try {
+    const res = await fetch(`${BASE_URL}/registered-ghg/paket/${id}`);
+    const json = await res.json();
+
+    return json
+  } catch (err) {
+    console.error("FETCH GHG ERROR:", err);
+  }
+};
+
+
   const handleSubmit = async () => {
-    if (!kodePaket) return alert("Pilih paket dulu");
+  
+  if (!kodePaket) return alert("Pilih paket dulu");
+  
+  if (!selectedPaket) return alert("Data paket tidak ditemukan");
 
-    // Validasi setiap jamaah
-    for (let i = 0; i < jamaah.length; i++) {
-      const j = jamaah[i];
-      if (!j.nama || !j.jenis_kelamin || !j.no_ktp || !j.tanggal_lahir) {
-        return alert(`Data jamaah ke-${i + 1} belum lengkap`);
-      }
-      if (i !== 0 && !j.hubungan_dengan_main) {
-        return alert(`Hubungan jamaah ke-${i + 1} wajib diisi`);
-      }
+  for (let i = 0; i < jamaah.length; i++) {
+    const j = jamaah[i];
+    if (!j.nama || !j.jenis_kelamin || !j.no_ktp || !j.tanggal_lahir) {
+      return alert(`Data jamaah ke-${i + 1} belum lengkap`);
     }
-
-    const payload = {
-      kode_paket: kodePaket,
-      notes,
-      jamaah,
-    };
-
-    try {
-      const res = await fetch(`${BASE_URL}/booking/create`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok) {
-        alert(json.message || "Gagal simpan booking");
-        return;
-      }
-
-      alert("Booking berhasil dibuat");
-      // reset form
-      setKodePaket("");
-      setNotes("");
-      setJamaah([{ ...emptyJamaah, hubungan_dengan_main: "DIRI SENDIRI" }]);
-    } catch (err) {
-      alert("Terjadi kesalahan server");
+    if (i !== 0 && !j.hubungan_dengan_main) {
+      return alert(`Hubungan jamaah ke-${i + 1} wajib diisi`);
     }
+  }
+
+  const totalJamaah = jamaah.length;
+
+  const booked_ghg = selectedPaket.seat_info.booked_ghg;
+  const booked_ppiu = selectedPaket.seat_info.booked_ppiu + totalJamaah;
+  const maxSlot = selectedPaket.seat_info.total_kursi;
+  const sisaSeat = selectedPaket.seat_info.sisa_seat;
+
+  if (totalJamaah > sisaSeat) {
+    Swal.fire({
+      title: "Error!",
+      text: "Sisa seat tidak mencukupi",
+      icon: "error",
+      showConfirmButton: false,
+    });
+  }
+
+  const filledSlotBaru = booked_ghg + booked_ppiu;
+  const availableSlotBaru = Math.max(maxSlot - filledSlotBaru, 0);
+
+  const payload = {
+    kode_paket: kodePaket,
+    notes,
+    jamaah,
   };
 
+  try {
+    const res = await fetch(`${BASE_URL}/booking/create`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      Swal.fire({
+      title: "Error!",
+      text: "Gagal Simpan Booking",
+      icon: "error",
+      showConfirmButton: false,
+    });
+      return;
+    }
+
+    const ghg = await fetchGHG(kodePaket);
+
+    if(ghg.status){
+      await updateSeat({
+        kode_paket: ghg.data.package_code,
+        kode_paket_db: kodePaket,
+  
+        max_slot: maxSlot,
+        filled_slot: filledSlotBaru,
+        available_slot: availableSlotBaru,
+  
+        booked_ghg: booked_ghg,
+        booked_ppiu: booked_ppiu,
+      });
+    }
+
+    Swal.fire({
+      title: "Success!",
+      text: "Booking Berhasil dibuat",
+      icon: "success",
+      timer: 2000,
+      showConfirmButton: false,
+    });
+
+    window.location.reload();
+
+  } catch {
+    Swal.fire({
+      title: "Error!",
+      text: "Terjadi Kesalahan Server",
+      icon: "error",
+      showConfirmButton: false,
+    });
+  }
+};
+
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-6 space-y-6 max-w-4xl mx-auto">
       <h1 className="text-xl font-bold">Tambah Booking Umroh</h1>
 
       {/* PILIH PAKET */}
       <div className="border p-4 rounded">
         <h2 className="font-semibold mb-2">Pilih Paket</h2>
+
         <select
-          className="border p-2 w-full"
+          className="block w-full border p-2 rounded"
           value={kodePaket}
           onChange={(e) => setKodePaket(e.target.value)}
+          disabled={loadingPaket}
         >
-          <option value="">-- Pilih Paket --</option>
+          <option value="">
+            {loadingPaket ? "Loading paket..." : "-- Pilih Paket --"}
+          </option>
           {paketList.map((p) => (
             <option key={p.kode_paket} value={p.kode_paket}>
-              {p.nama_paket ?? p.tipe_paket?.name ?? p.kode_paket}
+              {p.kode_paket} — {p.nama_paket}
             </option>
           ))}
         </select>
+
+        {/* PAGINATION */}
+        <div className="flex justify-between items-center mt-3 text-sm">
+          <button
+            disabled={page <= 1}
+            onClick={() => setPage((p) => p - 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+
+          <span>
+            Page {page} / {lastPage}
+          </span>
+
+          <button
+            disabled={page >= lastPage}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
       </div>
 
       {/* STATISTIK */}
       <div className="border p-4 rounded bg-gray-50 flex justify-between">
-        <div>Total Jamaah: <b>{jamaah.length}</b></div>
-        <div>Main Jamaah: <b>{jamaah[0]?.nama || "-"}</b></div>
+        <div>
+          Total Jamaah: <b>{jamaah.length}</b>
+        </div>
+        <div>
+          Main Jamaah: <b>{jamaah[0]?.nama || "-"}</b>
+        </div>
       </div>
 
       {/* CATATAN */}
       <div className="border p-4 rounded">
         <h2 className="font-semibold mb-2">Catatan</h2>
         <textarea
-          className="border p-2 w-full"
+          className="border p-2 w-full rounded"
           rows={3}
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -132,7 +257,9 @@ export default function BookingForm() {
         {jamaah.map((j, i) => (
           <div
             key={i}
-            className={`border p-4 rounded ${i === 0 ? "bg-yellow-50" : ""}`}
+            className={`border p-4 rounded ${
+              i === 0 ? "bg-yellow-50" : ""
+            }`}
           >
             <div className="flex justify-between mb-2">
               <h3 className="font-semibold">
@@ -140,8 +267,8 @@ export default function BookingForm() {
               </h3>
               {i !== 0 && (
                 <button
-                  className="text-red-500 text-sm"
                   onClick={() => removeJamaah(i)}
+                  className="text-red-500 text-sm"
                 >
                   Hapus
                 </button>
@@ -238,7 +365,7 @@ export default function BookingForm() {
             </div>
 
             <textarea
-              className="border p-2 w-full mt-3"
+              className="border p-2 w-full mt-3 rounded"
               placeholder="Alamat"
               value={j.alamat}
               onChange={(e) =>
@@ -249,7 +376,7 @@ export default function BookingForm() {
         ))}
       </div>
 
-      {/* ACTION BUTTON */}
+      {/* ACTION */}
       <div className="flex justify-between">
         <button
           onClick={addJamaah}
