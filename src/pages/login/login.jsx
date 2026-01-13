@@ -7,9 +7,8 @@ export default function SimpleLogin() {
 
   const handleSubmit = async () => {
     const tokenAuth = await generateTokenAuth(clientId, clientKey)
-    localStorage.setItem('tokenAuth', tokenAuth);
+    sessionStorage.setItem("tokenAuth", tokenAuth);
     window.location.href = '/paket-tersedia';
-    console.log(tokenAuth);
   };
 
   return (

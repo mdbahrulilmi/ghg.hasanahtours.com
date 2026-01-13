@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -28,7 +29,12 @@ export default function CountryPage() {
       );
       setCountries(sorted);
     } catch {
-      alert("Gagal ambil data negara");
+      Swal.fire({
+                title: "Error!",
+                text: "Gagal ambil data negara",
+                icon: "error",
+                showConfirmButton: false,
+              });
     } finally {
       setLoading(false);
     }
@@ -40,7 +46,12 @@ export default function CountryPage() {
 
   const handleSubmit = async () => {
     if (!formData.code || !formData.name) {
-      alert("Kode dan Nama negara wajib diisi");
+      Swal.fire({
+                title: "Error!",
+                text: "Kode dan Nama negara wajib diisi",
+                icon: "error",
+                showConfirmButton: false,
+              });
       return;
     }
 
@@ -72,7 +83,12 @@ export default function CountryPage() {
       const json = await res.json();
 
       if (!res.ok) {
-        alert(json.message || "Gagal simpan data");
+        Swal.fire({
+                title: "Error!",
+                text: "Gagal simpan data",
+                icon: "error",
+                showConfirmButton: false,
+              });
         return;
       }
 
@@ -80,7 +96,12 @@ export default function CountryPage() {
       setFormData({ code: "", new_code: "", name: "" });
       fetchCountries();
     } catch {
-      alert("Server error");
+      Swal.fire({
+          title: "Error!",
+          text: "Server error",
+          icon: "error",
+          showConfirmButton: false,
+        });
     }
   };
 

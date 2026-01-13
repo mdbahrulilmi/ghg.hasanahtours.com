@@ -2,15 +2,6 @@ import { useState } from "react"
 import { NavLink, Outlet } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import {
   LayoutDashboard,
   Plane,
   ChevronDown,
@@ -132,8 +123,8 @@ function DashboardLayout() {
         <div className="p-3 border-t">
         <button
           onClick={() => {
-            localStorage.removeItem("tokenAuth"); // hapus token
-            window.location.href = "/login"; // redirect ke login
+            localStorage.removeItem("tokenAuth");
+            window.location.href = "/login";
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors shadow-sm"
         >
@@ -146,7 +137,7 @@ function DashboardLayout() {
 
       {/* CONTENT */}
       <main className="flex-1 overflow-y-auto p-6">
-        <Outlet /> {/* <-- ini harus ada supaya sub-routes muncul */}
+        <Outlet />
       </main>
     </div>
   )

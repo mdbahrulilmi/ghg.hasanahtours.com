@@ -64,17 +64,10 @@ async function createPackage(payload) {
 
   const data = await res.json();
 
-  console.log("[CREATE PACKAGE][RESPONSE]", {
-    httpStatus: res.status,
-    data
-  });
-
-  // 🔥 VALIDASI YANG BENAR
   if (!res.ok || data.status !== true) {
     throw new Error(data.message || "Gagal create package");
   }
 
-  // 🔥 RETURN DATA SUPAYA CALLER TAHU SUKSES
   return {
     kode_paket: data.kode_paket,
     message: data.message

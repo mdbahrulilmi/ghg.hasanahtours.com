@@ -1,4 +1,3 @@
-// updateSeat.js
 import getToken from "./getToken";
 
 async function updateSeat({ kode_paket, kode_paket_db, filled_slot, max_slot, available_slot, booked_ppiu, booked_ghg }) {
@@ -15,7 +14,6 @@ async function updateSeat({ kode_paket, kode_paket_db, filled_slot, max_slot, av
       booked_ppiu, 
       booked_ghg
     }
-    console.log(updateSeat);
 
     const res = await fetch("https://be.hasanahtours.com/api/duft/update-seat", {
       method: "POST",
@@ -27,7 +25,7 @@ async function updateSeat({ kode_paket, kode_paket_db, filled_slot, max_slot, av
 
     if (!res.ok) throw new Error(data.message || "Gagal update seat");
 
-    return data; // backend handle Duft + DB lokal
+    return data;
   } catch (err) {
     console.error("UPDATE SEAT ERROR:", err);
     throw err;

@@ -90,7 +90,7 @@ function PackageCard({ pkg }) {
             ${
               uploading
                 ? "border-gray-300 text-gray-400"
-                : "border-amber-400 text-amber-700 hover:bg-amber-50"
+                : "border-emerald-400 text-emerald-700 hover:bg-emerald-50"
             }`}
         >
           {uploading ? "Uploading..." : "Upload Itinerary"}

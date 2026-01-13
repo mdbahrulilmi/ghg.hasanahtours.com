@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -33,7 +34,12 @@ export default function BookingList() {
       setData(json.data || []);
       setMeta(json.meta || null);
     } catch {
-      alert("Gagal ambil data booking");
+      Swal.fire({
+            title: "Error!",
+            text: `Gagal ambil data booking`,
+            icon: "error",
+            showConfirmButton: false,
+          });
     } finally {
       setLoading(false);
     }

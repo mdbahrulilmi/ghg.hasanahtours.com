@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 const ITEMS_PER_PAGE = 10;
@@ -29,7 +30,12 @@ export default function PackageTypePage() {
 
     setPackageTypes(sorted);
     } catch {
-      alert("Gagal ambil data tipe paket");
+      Swal.fire({
+                  title: "Error!",
+                  text: "Gagal ambil data paket",
+                  icon: "error",
+                  showConfirmButton: false,
+                });
     } finally {
       setLoading(false);
     }
@@ -51,7 +57,12 @@ export default function PackageTypePage() {
 
   const handleSubmit = async () => {
     if (!formData.kategori_paket || !formData.nama_tipe_paket) {
-      alert("Kategori paket dan nama tipe paket wajib diisi");
+      Swal.fire({
+                  title: "Error!",
+                  text: "Kategori paket dan nama paket wajib diisi",
+                  icon: "error",
+                  showConfirmButton: false,
+                });
       return;
     }
 
@@ -68,34 +79,24 @@ export default function PackageTypePage() {
       const json = await res.json();
 
       if (!res.ok) {
-        alert(json.message || "Gagal simpan");
+        Swal.fire({
+                    title: "Error!",
+                    text: "Gagal submit data",
+                    icon: "error",
+                    showConfirmButton: false,
+                  });
         return;
       }
 
       setShowModal(false);
       fetchPackageTypes();
     } catch {
-      alert("Server error");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin hapus tipe paket ini?")) return;
-
-    try {
-      const res = await fetch(`${BASE_URL}/master/package-type/delete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        alert(json.message || "Gagal hapus");
-        return;
-      }
-      fetchPackageTypes();
-    } catch {
-      alert("Server error");
+      Swal.fire({
+                  title: "Error!",
+                  text: "Server error",
+                  icon: "error",
+                  showConfirmButton: false,
+                });
     }
   };
 
@@ -120,7 +121,6 @@ export default function PackageTypePage() {
     startIndex + ITEMS_PER_PAGE
   );
 
-  // reset page kalau filter/search berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [search, filterCategory]);

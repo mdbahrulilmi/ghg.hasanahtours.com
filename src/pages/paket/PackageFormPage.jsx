@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -66,7 +67,6 @@ export default function PackageFormPage() {
       );
       setKotaTujuan(Array.isArray(resKotaTujuan.data) ? resKotaTujuan.data : []);
     } catch (err) {
-      console.error("Error fetching dropdowns:", err);
       setError("Gagal memuat dropdowns");
     }
   };
@@ -83,7 +83,6 @@ export default function PackageFormPage() {
       const res = await fetch(`${BASE_URL}/paket/${kodePaket}`);
       if (!res.ok) throw new Error("Gagal fetch paket");
       const pkg = (await res.json()).data;
-      console.log(pkg);
       if (pkg) {
         setFormData({
           kode_paket: pkg.kode_paket || null,
@@ -110,7 +109,6 @@ export default function PackageFormPage() {
         });
       }
     } catch (err) {
-      console.error("Error fetching package:", err);
       setError("Gagal memuat data paket");
     }
   };
@@ -163,7 +161,6 @@ export default function PackageFormPage() {
       gambar: formData.gambar || undefined,
     };
 
-    console.log(payload);
 
     try {
       const res = await fetch(endpoint, {
@@ -174,14 +171,23 @@ export default function PackageFormPage() {
       const json = await res.json();
 
       if (!res.ok) {
-        alert(json.message || (isEdit ? "Gagal update paket" : "Gagal buat paket"));
+        Swal.fire({
+            title: "Error!",
+            text: json.message || (isEdit ? "Gagal update paket" : "Gagal buat paket"),
+            icon: "error",
+            showConfirmButton: false,
+          });
         return;
       }
 
       navigate("/package");
     } catch (err) {
-      console.error(err);
-      alert("Server error");
+      Swal.fire({
+            title: "Error!",
+            text: "Server error",
+            icon: "error",
+            showConfirmButton: false,
+          });
     }
   };
 

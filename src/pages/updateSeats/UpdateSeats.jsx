@@ -41,7 +41,6 @@ function PackageCard({ pkg, onUpdate, setNotification }) {
       });
       
     } catch (err) {
-      console.error(err);
     } finally {
       setLoading(false);
     }

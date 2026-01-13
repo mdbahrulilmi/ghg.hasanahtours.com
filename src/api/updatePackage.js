@@ -70,8 +70,6 @@ async function updatePackage(payload) {
     token
   };
 
-  console.log("PAYLOAD UPDATE PACKAGE FRONTEND:", body);
-
   const res = await fetch("https://be.hasanahtours.com/api/duft/update-package", {
     method: "POST",
     headers: {
@@ -82,8 +80,6 @@ async function updatePackage(payload) {
   });
 
   const data = await res.json();
-  console.log("RESPONSE UPDATE PACKAGE BACKEND:", data);
-
   if (!res.ok) {
     throw new Error(data.message || "Gagal update package");
   }

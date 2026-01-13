@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -32,7 +33,12 @@ export default function HotelPage() {
       a.hotelname.localeCompare(b.hotelname));
       setHotels(sorted);
     } catch {
-      alert("Gagal ambil data hotel");
+      Swal.fire({
+          title: "Error!",
+          text: "Gagal ambil data hotel",
+          icon: "error",
+          showConfirmButton: false,
+              });
     } finally {
       setLoading(false);
     }
@@ -45,7 +51,6 @@ export default function HotelPage() {
       const json = await res.json();
       setCities(json.data || []);
     } catch {
-      console.log("Gagal ambil list kota");
     }
   };
 
@@ -72,11 +77,21 @@ export default function HotelPage() {
 
   const handleSubmit = async () => {
     if (!formData.hotelname || !formData.idhotelcity) {
-      alert("Nama hotel dan kota wajib diisi");
+      Swal.fire({
+                title: "Error!",
+                text: "Nama hotel dan kota wajib diisi",
+                icon: "error",
+                showConfirmButton: false,
+              });
       return;
     }
     if (formData.bintang < 1 || formData.bintang > 5) {
-      alert("Bintang harus antara 1-5");
+      Swal.fire({
+                title: "Error!",
+                text: "Bintang harus 1-5",
+                icon: "error",
+                showConfirmButton: false,
+              });
       return;
     }
 
@@ -93,18 +108,25 @@ export default function HotelPage() {
 
       const json = await res.json();
       if (!res.ok) {
-        alert(
-          json.message ||
-            (isEdit ? "Gagal update hotel" : "Gagal tambah hotel")
-        );
+        Swal.fire({
+                title: "Error!",
+                text: json.message ||
+            (isEdit ? "Gagal update hotel" : "Gagal tambah hotel"),
+                icon: "error",
+                showConfirmButton: false,
+              });
         return;
       }
 
       setShowModal(false);
       fetchHotels();
     } catch (err) {
-      console.error(err);
-      alert("Server error");
+      Swal.fire({
+                title: "Error!",
+                text: "Server error",
+                icon: "error",
+                showConfirmButton: false,
+              });
     }
   };
 

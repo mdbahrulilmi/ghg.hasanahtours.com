@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -25,7 +26,12 @@ export default function AirlinesPage() {
       );
       setAirlines(sorted);
     } catch (err) {
-      alert("Gagal ambil data airlines");
+      Swal.fire({
+        title: "Error!",
+        text: "Gagal ambil data airlines",
+        icon: "error",
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -37,7 +43,12 @@ export default function AirlinesPage() {
 
   const handleSubmit = async () => {
     if (!formData.airlinesname) {
-      alert("Nama airlines wajib diisi");
+      Swal.fire({
+            title: "Error!",
+            text: "Nama airlines wajib diisi",
+            icon: "error",
+            showConfirmButton: false,
+          });
       return;
     }
 
@@ -58,7 +69,12 @@ export default function AirlinesPage() {
       const json = await res.json();
 
       if (!res.ok) {
-        alert(json.message || "Gagal simpan data");
+        Swal.fire({
+              title: "Error!",
+              text: "Gagal simpan data",
+              icon: "error",
+              showConfirmButton: false,
+            });
         return;
       }
 
@@ -66,7 +82,12 @@ export default function AirlinesPage() {
       setFormData({ idairlines: null, airlinesname: "" });
       fetchAirlines();
     } catch (err) {
-      alert("Server error");
+      Swal.fire({
+            title: "Error!",
+            text: "Server Error",
+            icon: "error",
+            showConfirmButton: false,
+          });
     }
   };
 

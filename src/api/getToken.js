@@ -22,7 +22,6 @@ async function getToken(){
 
     return data.token;
   } catch (err) {
-    console.error("Error:", err.message);
     throw err;
   }
 }

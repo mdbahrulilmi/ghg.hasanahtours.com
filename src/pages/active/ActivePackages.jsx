@@ -93,78 +93,74 @@ export default function ActivePackages() {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredPaket.length === 0 && (
-            <div className="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-200 col-span-full">
-              <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Package className="w-10 h-10 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-bold text-gray-800 mb-2">Belum ada paket</h3>
-              <p className="text-gray-500">Coba ubah kata kunci pencarian</p>
-            </div>
-          )}
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-6">
+    {filteredPaket.length === 0 && (
+      <div className="col-span-full text-center py-12 sm:py-16">
+        <Package className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-300 mb-4" />
+        <p className="text-gray-500 text-base sm:text-lg font-medium">Belum ada paket</p>
+        <p className="text-gray-400 text-xs sm:text-sm mt-2">Coba ubah kata kunci pencarian</p>
+      </div>
+    )}
 
-          {filteredPaket.map((item) => (
-            <div
-              key={item.id}
-              className="bg-white rounded-2xl shadow-sm border border-gray-200 hover:shadow-md transition-all overflow-hidden"
-            >
-              {/* Header Card */}
-              <div className="p-6 border-b border-gray-200">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-md font-bold line-clamp-2 text-gray-900">{item.package_name}</h3>
-                  <span className="bg-emerald-500 text-white text-xs font-semibold px-3 py-1 rounded-2xl">
-                    Aktif
-                  </span>
-                </div>
-                <p className="text-gray-500 text-sm">ID: {item.package_id}</p>
-              </div>
-
-              {/* Body Card */}
-              <div className="p-6 space-y-4">
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3 text-gray-700">
-                    <div className="bg-gray-100 p-2 rounded-2xl">
-                      <MapPin className="w-5 h-5 text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wide">Kode Paket</p>
-                      <p className="font-semibold text-lg text-gray-900">{item.package_code}</p>
-                    </div>
-                  </div>
-                  <a
-                    href={`/edit-paket/${item.package_code}`}
-                    className="flex items-center bg-yellow-400 hover:bg-yellow-500 text-white font-medium px-3 py-1 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200"
-                  >
-                    Edit
-                  </a>
-                </div>
-
-                <div className="border-t pt-4 space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <span className="font-medium">Dibuat:</span>
-                    <span>{formatDate(item.created_at)}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <Calendar className="w-4 h-4 text-gray-600" />
-                    <span className="font-medium">Diperbarui:</span>
-                    <span>{formatDate(item.updated_at)}</span>
-                  </div>
-                </div>
-
-                <a
-                  href={`${url}${item.package_code}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full mt-4 bg-gray-100 text-gray-900 py-3 rounded-2xl font-semibold shadow hover:shadow-md text-center block transition-all duration-300"
-                >
-                  Lihat Detail
-                </a>
-              </div>
-            </div>
-          ))}
+    {filteredPaket.map((item) => (
+      <div
+        key={item.package_id}
+        className="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
+      >
+        {/* Header Card */}
+        <div className="bg-gradient-to-r from-emerald-500 to-teal-500 p-4 sm:p-6 text-white">
+          <h3 className="text-base sm:text-xl font-bold mb-2 line-clamp-2">{item.package_name}</h3>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <span className="bg-white/20 backdrop-blur-sm px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold">
+              Aktif
+            </span>
+            <span className="text-xs opacity-75">ID: {item.package_id}</span>
+          </div>
         </div>
+
+        {/* Body Card */}
+        <div className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+          <div className="flex items-start gap-2 sm:gap-3">
+            <Package className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-gray-500 mb-1">Kode Paket</p>
+              <p className="font-mono text-sm sm:text-base font-semibold text-gray-800 break-all">
+                {item.package_code}
+              </p>
+            </div>
+          </div>
+
+          <a
+            href={`/edit-paket/${item.package_code}`}
+            className="block w-full text-center bg-emerald-500 hover:bg-emerald-600 text-white text-sm sm:text-base font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-colors duration-200"
+          >
+            Edit
+          </a>
+
+          <div className="pt-3 sm:pt-4 border-t border-gray-100 space-y-2 text-xs text-gray-500">
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="truncate">Dibuat: {formatDate(item.created_at)}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
+              <span className="truncate">Diperbarui: {formatDate(item.updated_at)}</span>
+            </div>
+          </div>
+
+          <a
+            href={`${url}${item.package_code}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block w-full text-center border-2 border-emerald-500 text-emerald-600 hover:bg-emerald-50 text-sm sm:text-base font-semibold py-2.5 sm:py-3 rounded-lg sm:rounded-xl transition-colors duration-200"
+          >
+            Lihat Detail
+          </a>
+        </div>
+      </div>
+    ))}
+  </div>
+
       </div>
     </div>
   );

@@ -241,7 +241,7 @@ export default function PaketTersedia() {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2">
                 <Users className="w-4 h-4 text-blue-600" />
-                <span className="text-gray-600">{item.total_kursi} kursi</span>
+                <span className="text-gray-600">{item.seat_info.total_kursi} kursi</span>
               </div>
               <div className="flex items-center gap-2">
                 <Calendar className="w-4 h-4 text-green-600" />
@@ -251,16 +251,16 @@ export default function PaketTersedia() {
 
             <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-3 gap-2 text-xs">
               <div className="bg-purple-50 p-2 rounded">
-                <p className="text-gray-600 mb-1">1 Orang</p>
-                <p className="font-bold text-purple-700">{formatCurrency(item.harga.ber1)}</p>
+                <p className="text-gray-600 mb-1">2 Orang</p>
+                <p className="font-bold text-purple-700">{formatCurrency(item.harga.ber2)}</p>
               </div>
               <div className="bg-blue-50 p-2 rounded">
-                <p className="text-gray-600 mb-1">2 Orang</p>
-                <p className="font-bold text-blue-700">{formatCurrency(item.harga.ber2)}</p>
+                <p className="text-gray-600 mb-1">3 Orang</p>
+                <p className="font-bold text-blue-700">{formatCurrency(item.harga.ber3)}</p>
               </div>
               <div className="bg-green-50 p-2 rounded">
-                <p className="text-gray-600 mb-1">3+ Orang</p>
-                <p className="font-bold text-green-700">{formatCurrency(item.harga.ber3)}</p>
+                <p className="text-gray-600 mb-1">4 Orang</p>
+                <p className="font-bold text-green-700">{formatCurrency(item.harga.ber4)}</p>
               </div>
             </div>
           </div>
@@ -322,7 +322,7 @@ export default function PaketTersedia() {
                             </div>
                             <div className="text-xs text-gray-600 space-y-1">
                               <p>📅 {formatDate(item.tanggal_berangkat)}</p>
-                              <p>👥 {item.total_kursi} kursi</p>
+                              <p>👥 {item.seat_info.total_kursi} kursi</p>
                             </div>
                           </div>
                         ))}

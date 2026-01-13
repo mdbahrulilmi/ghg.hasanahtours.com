@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -25,7 +26,12 @@ export default function KotaKeberangkatanPage() {
       );
       setCities(sorted);
     } catch {
-      alert("Gagal ambil data kota");
+      Swal.fire({
+            title: "Error!",
+            text: "Gagal ambil data kota",
+            icon: "error",
+            showConfirmButton: false,
+          });
     } finally {
       setLoading(false);
     }
@@ -43,7 +49,12 @@ export default function KotaKeberangkatanPage() {
 
   const handleSubmit = async () => {
     if (!formData.name) {
-      alert("Nama kota wajib diisi");
+      Swal.fire({
+          title: "Error!",
+          text: "Nama kota wajib diisi",
+          icon: "error",
+          showConfirmButton: false,
+        });
       return;
     }
 
@@ -60,35 +71,24 @@ export default function KotaKeberangkatanPage() {
 
       const json = await res.json();
       if (!res.ok) {
-        alert(json.message || "Gagal submit");
+        Swal.fire({
+            title: "Error!",
+            text: "Gagal submit data",
+            icon: "error",
+            showConfirmButton: false,
+          });
         return;
       }
 
       setShowModal(false);
       fetchCities();
     } catch {
-      alert("Server error");
-    }
-  };
-
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin hapus kota ini?")) return;
-
-    try {
-      const res = await fetch(`${BASE_URL}/master/kotaKeberangkatan/delete`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-
-      const json = await res.json();
-      if (!res.ok) {
-        alert(json.message || "Gagal hapus kota");
-        return;
-      }
-      fetchCities();
-    } catch {
-      alert("Server error");
+      Swal.fire({
+            title: "Error!",
+            text: "Server error",
+            icon: "error",
+            showConfirmButton: false,
+          });
     }
   };
 

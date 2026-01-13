@@ -41,7 +41,12 @@ export default function BookingForm() {
       setPage(json.meta?.current_page || 1);
       setLastPage(json.meta?.last_page || 1);
     } catch {
-      alert("Gagal ambil data paket");
+      Swal.fire({
+      title: "Error!",
+      text: `Gagal ambil data paket`,
+      icon: "error",
+      showConfirmButton: false,
+    });
     } finally {
       setLoadingPaket(false);
     }
@@ -64,12 +69,8 @@ export default function BookingForm() {
   };
 
   const addJamaah = () => {
-    if (jamaah.length >= 10) {
-      alert("Maksimal 10 jamaah");
-      return;
-    }
     setJamaah([...jamaah, { ...emptyJamaah }]);
-  };
+  };  
 
   const removeJamaah = (index) => {
     if (index === 0) return;
@@ -83,24 +84,43 @@ export default function BookingForm() {
 
     return json
   } catch (err) {
-    console.error("FETCH GHG ERROR:", err);
   }
 };
 
 
   const handleSubmit = async () => {
   
-  if (!kodePaket) return alert("Pilih paket dulu");
+  if (!kodePaket) return Swal.fire({
+      title: "Error!",
+      text: `Pilih paket terlebih dahulu`,
+      icon: "error",
+      showConfirmButton: false,
+    });;
   
-  if (!selectedPaket) return alert("Data paket tidak ditemukan");
+  if (!selectedPaket) return Swal.fire({
+      title: "Error!",
+      text: `Data paket tidak ditemukan`,
+      icon: "error",
+      showConfirmButton: false,
+    });;
 
   for (let i = 0; i < jamaah.length; i++) {
     const j = jamaah[i];
     if (!j.nama || !j.jenis_kelamin || !j.no_ktp || !j.tanggal_lahir) {
-      return alert(`Data jamaah ke-${i + 1} belum lengkap`);
+      Swal.fire({
+      title: "Error!",
+      text: `Data jamaah ke-${i + 1} belum lengkap`,
+      icon: "error",
+      showConfirmButton: false,
+    });
     }
     if (i !== 0 && !j.hubungan_dengan_main) {
-      return alert(`Hubungan jamaah ke-${i + 1} wajib diisi`);
+      Swal.fire({
+      title: "Error!",
+      text: `Hubungan jamaah ke-${i + 1} wajib diisi`,
+      icon: "error",
+      showConfirmButton: false,
+    });
     }
   }
 

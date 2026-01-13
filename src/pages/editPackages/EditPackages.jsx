@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import EditPackagesForm from './EditPackagesForm';
 import updatePackage from '@/api/updatePackage';
+import Swal from 'sweetalert2';
 
 export default function EditPackages() {
   const [formData, setFormData] = useState({
@@ -95,9 +96,6 @@ export default function EditPackages() {
         if (!res.ok) throw new Error("Gagal mengambil data paket lengkap");
         const json = await res.json();
         const data = json.data;
-
-        console.log(data);
-
         const hotelsArray = data.hotels ? Object.values(data.hotels).filter(Boolean).map((h, idx) => ({
           idhotelmitra: idx + 1,
           kota: h.city || '',
@@ -244,11 +242,23 @@ export default function EditPackages() {
 
     try {
       await updatePackage(payload);
-      alert("Update berhasil");
-      // navigate(-1);
+      Swal.fire({
+          title: "Success!",
+          text: "Update Berhasil",
+          icon: "success",
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          navigate(-1, { state: { reload: true } });
+        });
+
     } catch (err) {
-      console.error(err);
-      alert(err.message || "Gagal update paket");
+      Swal.fire({
+                title: "Error!",
+                text: "Gagal Update Paket",
+                icon: "error",
+                showConfirmButton: false,
+              });
     }
   };
 

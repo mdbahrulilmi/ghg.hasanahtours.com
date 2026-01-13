@@ -20,12 +20,15 @@ import BookingList from "./pages/booking/BookingList";
 import BookingForm from "./pages/booking/BookingForm";
 
 function ProtectedRoute({ children }) {
-  const token = localStorage.getItem('tokenAuth');
+  const token = sessionStorage.getItem("tokenAuth");
+
   if (!token) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 }
+
 
 export default function App() {
   return (

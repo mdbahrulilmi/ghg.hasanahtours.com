@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
 
@@ -28,7 +29,12 @@ export default function CitiesPage() {
       );
       setCities(sorted);
     } catch {
-      alert("Gagal ambil data city");
+      Swal.fire({
+        title: "Error!",
+        text: `Gagal ambil data city`,
+        icon: "error",
+        showConfirmButton: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -41,7 +47,6 @@ export default function CitiesPage() {
       const json = await res.json();
       setCountries(json.data || []);
     } catch {
-      console.log("Gagal ambil list negara");
     }
   };
 
@@ -63,7 +68,12 @@ export default function CitiesPage() {
 
   const handleSubmit = async () => {
     if (!formData.name || !formData.countryCode) {
-      alert("Nama city dan kode negara wajib diisi");
+       Swal.fire({
+          title: "Error!",
+          text: "Nama city dan kode negara wajib diisi",
+          icon: "error",
+          showConfirmButton: false,
+        });
       return;
     }
 
@@ -79,39 +89,27 @@ export default function CitiesPage() {
       });
       const json = await res.json();
       if (!res.ok) {
-        alert(
-          json.message || (isEdit ? "Gagal update city" : "Gagal tambah city")
-        );
+        Swal.fire({
+                    title: "Error!",
+                    text: json.message || (isEdit ? "Gagal update city" : "Gagal tambah city"),
+                    icon: "error",
+                    showConfirmButton: false,
+                  });
         return;
       }
       setShowModal(false);
       fetchCities();
     } catch {
-      alert("Server error");
+      Swal.fire({
+            title: "Error!",
+            text: `Server error`,
+            icon: "error",
+            showConfirmButton: false,
+          });
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Yakin hapus city ini?")) return;
-
-    try {
-      const res = await fetch(`${BASE_URL}/master/deleteCity`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
-      });
-      const json = await res.json();
-      if (!res.ok) {
-        alert(json.message || "Gagal hapus city");
-        return;
-      }
-      fetchCities();
-    } catch {
-      alert("Server error");
-    }
-  };
-
-  // 🔍 SEARCH FILTER
+ // 🔍 SEARCH FILTER
   const filteredCities = cities.filter(
     (c) =>
       c.name?.toLowerCase().includes(search.toLowerCase()) ||

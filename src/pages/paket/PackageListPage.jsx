@@ -22,7 +22,6 @@ export default function PackageListPage() {
       const json = await res.json();
       setPackages(json.data || json || []);
     } catch (err) {
-      console.error(err);
       alert("Gagal ambil data paket");
     } finally {
       setLoading(false);
@@ -33,21 +32,45 @@ export default function PackageListPage() {
     fetchPackages();
   }, []);
 
-  // SEARCH + FILTER
+  const normalizeTanggal = (dateStr) => {
+    if (!dateStr) return [];
+
+    const iso = dateStr.substring(0, 10);
+    const [y, m, d] = iso.split("-");
+
+    return [
+      iso,
+      `${d}-${m}-${y}`,
+      `${d}-${m}`,
+      `${m}-${y}`,     
+      y,                
+    ];
+  };
+  
+ 
   const filteredPackages = packages.filter((pkg) => {
-    const searchValue = search.toLowerCase();
+  const searchValue = search.toLowerCase();
 
-    const matchSearch =
-      pkg.kode_paket?.toLowerCase().includes(searchValue) ||
-      pkg.tipe_paket?.name?.toLowerCase().includes(searchValue) ||
-      pkg.airline?.name?.toLowerCase().includes(searchValue);
+  const tanggalVariants = normalizeTanggal(pkg.tanggal_berangkat);
 
-    const matchType = filterType
-      ? pkg.tipe_paket?.name === filterType
-      : true;
+  const matchSearch = [
+    pkg.kode_paket,
+    pkg.nama_paket,
+    pkg.tipe_paket?.name,
+    pkg.airline?.name,
+    ...tanggalVariants,
+  ].some(
+    (field) =>
+      field?.toLowerCase().includes(searchValue)
+  );
 
-    return matchSearch && matchType;
-  });
+  const matchType = filterType
+    ? pkg.tipe_paket?.name === filterType
+    : true;
+
+  return matchSearch && matchType;
+});
+
 
   // PAGINATION
   const totalPages = Math.ceil(filteredPackages.length / ITEMS_PER_PAGE);
@@ -57,16 +80,13 @@ export default function PackageListPage() {
     startIndex + ITEMS_PER_PAGE
   );
 
-  // reset page saat search/filter berubah
   useEffect(() => {
     setCurrentPage(1);
   }, [search, filterType]);
 
-  // UNIQUE TIPE PAKET
   const packageTypes = [
     ...new Set(packages.map((p) => p.tipe_paket?.name).filter(Boolean)),
   ];
-
   return (
     <div className="p-6">
       {/* HEADER */}
@@ -112,9 +132,12 @@ export default function PackageListPage() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="border p-2">No</th>
-                <th className="border p-2">Kode Paket</th>
                 <th className="border p-2">Tipe Paket</th>
+                <th className="border p-2">Nama Paket</th>
+                <th className="border p-2">Sisa Kursi</th>
+                <th className="border p-2">Total Booking</th>
                 <th className="border p-2">Total Kursi</th>
+                <th className="border p-2">Keberangkatan</th>
                 <th className="border p-2">Airline</th>
                 <th className="border p-2">Aksi</th>
               </tr>
@@ -135,12 +158,31 @@ export default function PackageListPage() {
                     <td className="border p-2 text-center">
                       {startIndex + index + 1}
                     </td>
-                    <td className="border p-2">{pkg.kode_paket}</td>
                     <td className="border p-2">
                       {pkg.tipe_paket?.name || "-"}
                     </td>
+                    <td className="border p-2">
+                      {pkg.nama_paket || "-"}
+                    </td>
                     <td className="border p-2 text-center">
-                      {pkg.total_kursi}
+                      {pkg.seat_info.sisa_seat}
+                    </td>
+                    <td className="border p-2 text-center">
+                      {pkg.seat_info.total_booked}
+                    </td>
+                    <td className="border p-2 text-center">
+                      {pkg.seat_info.total_kursi}
+                    </td>
+                    <td className="border p-2 text-center">
+                      {
+                        pkg.tanggal_berangkat
+                          ? (() => {
+                              const [y, m, d] = pkg.tanggal_berangkat.substring(0, 10).split("-");
+                              return `${d}-${m}-${y}`;
+                            })()
+                          : "-"
+                      }
+
                     </td>
                     <td className="border p-2">
                       {pkg.airline?.name || "-"}
