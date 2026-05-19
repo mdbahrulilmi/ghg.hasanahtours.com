@@ -207,9 +207,9 @@ export default function UpdateItineraryPerPackage() {
             </div>
           )}
 
-          {filteredPackages.map((pkg) => (
+          {[...filteredPackages.reverse().map((pkg) => (
             <PackageCard key={pkg.package_id} pkg={pkg} />
-          ))}
+          ))]}
         </div>
       </div>
     </div>

@@ -3,11 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 
 const BASE_URL = "https://be.hasanahtours.com/api/v1";
+import { useDropzone } from "react-dropzone";
 
 export default function PackageFormPage() {
   const { kodePaket } = useParams();
   const isEdit = !!kodePaket;
   const navigate = useNavigate();
+  const [uploading, setUploading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -107,6 +110,7 @@ export default function PackageFormPage() {
           harga_perlengkapan: 0,
           gambar: pkg.gambar || "",
         });
+        setPreviewImage(pkg.gambar || null);
       }
     } catch (err) {
       setError("Gagal memuat data paket");
@@ -125,71 +129,104 @@ export default function PackageFormPage() {
 
   const safeMap = (arr) => (Array.isArray(arr) ? arr : []);
 
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    accept: {
+      "image/*": [],
+    },
+    multiple: false,
+    onDrop: (acceptedFiles) => {
+      if (acceptedFiles.length > 0) {
+        const file = acceptedFiles[0];
+
+        setFormData((prev) => ({
+          ...prev,
+          gambar: file,
+        }));
+
+        setPreviewImage(URL.createObjectURL(file));
+      }
+    },
+  });
+
   const filterHotelsByCity = (cityName) =>
     safeMap(hotels).filter((h) => h.cityname.toLowerCase() === cityName.toLowerCase());
 
-  // Submit handler
   const handleSubmit = async () => {
+  try {
     const endpoint = isEdit
       ? `${BASE_URL}/paket/update`
       : `${BASE_URL}/paket/buat`;
 
-    // Build payload, only include kode_paket if edit
+    let imageUrl = formData.gambar;
+
+    if (formData.gambar instanceof File) {
+      setUploading(true);
+
+      const body = new FormData();
+      body.append("image", formData.gambar);
+
+      const uploadRes = await fetch(`${BASE_URL}/master/upload-image`, {
+        method: "POST",
+        body,
+      });
+
+      const uploadJson = await uploadRes.json();
+
+      if (!uploadRes.ok) {
+        throw new Error(uploadJson.message || "Upload gagal");
+      }
+
+      imageUrl = uploadJson.data.url;
+    }
+
     const payload = {
       ...(!isEdit ? {} : { kode_paket: formData.kode_paket }),
       nama_paket: formData.nama_paket || undefined,
-      tipe_paket_id: formData.tipe_paket_id ? Number(formData.tipe_paket_id) : undefined,
-      total_kursi: formData.total_kursi ? Number(formData.total_kursi) : undefined,
-      airlines_id: formData.airlines_id ? Number(formData.airlines_id) : undefined,
-      jumlah_hari: formData.jumlah_hari ? Number(formData.jumlah_hari) : undefined,
-      hotel_mekka: formData.hotel_mekka ? Number(formData.hotel_mekka) : null,
-      hotel_medina: formData.hotel_medina ? Number(formData.hotel_medina) : null,
-      hotel_jedda: formData.hotel_jeddah ? Number(formData.hotel_jeddah) : null,
-      keberangkatan_id: formData.keberangkatan_id ? Number(formData.keberangkatan_id) : undefined,
-      kota_tujuan_id: formData.kota_tujuan_id ? Number(formData.kota_tujuan_id) : undefined,
-      no_penerbangan: formData.no_penerbangan || undefined,
-      tanggal_berangkat: formData.tanggal_berangkat || undefined,
-      kurs_tetap: formData.kurs_tetap ? Number(formData.kurs_tetap) : undefined,
-      hargaber1: formData.hargaber1 ? Number(formData.hargaber1) : 0,
-      hargaber2: formData.hargaber2 ? Number(formData.hargaber2) : undefined,
-      hargaber3: formData.hargaber3 ? Number(formData.hargaber3) : undefined,
-      hargaber4: formData.hargaber4 ? Number(formData.hargaber4) : undefined,
-      hargabayi: formData.hargabayi ? Number(formData.hargabayi) : undefined,
-      harga_perlengkapan: formData.harga_perlengkapan
-        ? Number(formData.harga_perlengkapan)
-        : 0,
-      gambar: formData.gambar || undefined,
+      tipe_paket_id: formData.tipe_paket_id
+        ? Number(formData.tipe_paket_id)
+        : undefined,
+
+      gambar: imageUrl || undefined,
     };
 
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
 
-    try {
-      const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const json = await res.json();
+    const json = await res.json();
 
-      if (!res.ok) {
-        Swal.fire({
-            title: "Error!",
-            text: json.message || (isEdit ? "Gagal update paket" : "Gagal buat paket"),
-            icon: "error",
-            showConfirmButton: false,
-          });
-        return;
-      }
-
-      navigate("/package");
-    } catch (err) {
-      Swal.fire({
-            title: "Error!",
-            text: "Server error",
-            icon: "error",
-            showConfirmButton: false,
-          });
+    if (!res.ok) {
+      throw new Error(
+        json.message ||
+          (isEdit ? "Gagal update paket" : "Gagal buat paket")
+      );
     }
-  };
+
+    Swal.fire({
+      icon: "success",
+      title: isEdit
+        ? "Berhasil update paket"
+        : "Berhasil buat paket",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    navigate("/package");
+
+  } catch (err) {
+    Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: err.message || "Server error",
+    });
+  } finally {
+    setUploading(false);
+  }
+};
 
   if (loading) return <p className="p-6">Loading form...</p>;
   if (error) return <p className="p-6 text-red-600">{error}</p>;
@@ -320,11 +357,36 @@ export default function PackageFormPage() {
 
 
         {/** Gambar **/}
-        <FormInput
-          label="Gambar (URL)"
-          value={formData.gambar}
-          onChange={(v) => setFormData({ ...formData, gambar: v })}
-        />
+        <div>
+          <label className="block mb-1 font-medium">Gambar</label>
+
+          <div
+            {...getRootProps()}
+            className={`border-2 border-dashed rounded p-6 text-center cursor-pointer bg-white
+              ${isDragActive ? "border-green-500 bg-green-50" : "border-gray-300"}
+            `}
+          >
+            <input {...getInputProps()} />
+
+            {uploading ? (
+              <p>Uploading...</p>
+            ) : (
+              <p>
+                Drag & drop gambar di sini, atau klik untuk pilih file
+              </p>
+            )}
+          </div>
+
+          {previewImage && (
+            <div className="mt-4">
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="w-40 rounded border"
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Buttons */}

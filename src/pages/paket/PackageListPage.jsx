@@ -52,6 +52,8 @@ export default function PackageListPage() {
   const searchValue = search.toLowerCase();
 
   const tanggalVariants = normalizeTanggal(pkg.tanggal_berangkat);
+  console.log(pkg.tanggal_berangkat);
+  console.log(packages);
 
   const matchSearch = [
     pkg.kode_paket,
@@ -68,7 +70,9 @@ export default function PackageListPage() {
     ? pkg.tipe_paket?.name === filterType
     : true;
 
+  
   return matchSearch && matchType;
+
 });
 
 

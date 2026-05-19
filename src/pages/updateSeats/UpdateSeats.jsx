@@ -332,14 +332,14 @@ export default function UpdateSeatsPage() {
             </div>
           )}
 
-          {filteredPackages.map((pkg) => (
-            <PackageCard
-              key={pkg.package_id}
-              pkg={pkg}
-              onUpdate={fetchPackages}
-              setNotification={setNotification}
-            />
-          ))}
+         {[...filteredPackages].reverse().map((pkg) => (
+          <PackageCard
+            key={pkg.package_id}
+            pkg={pkg}
+            onUpdate={fetchPackages}
+            setNotification={setNotification}
+          />
+        ))}
         </div>
       </div>
     </div>

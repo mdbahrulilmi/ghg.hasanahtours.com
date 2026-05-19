@@ -102,7 +102,7 @@ export default function ActivePackages() {
       </div>
     )}
 
-    {filteredPaket.map((item) => (
+    {[...filteredPaket.reverse().map((item) => (
       <div
         key={item.package_id}
         className="bg-white rounded-xl sm:rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
@@ -158,7 +158,7 @@ export default function ActivePackages() {
           </a>
         </div>
       </div>
-    ))}
+    ))]}
   </div>
 
       </div>
