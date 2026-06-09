@@ -181,11 +181,79 @@ export default function PackageFormPage() {
 
     const payload = {
       ...(!isEdit ? {} : { kode_paket: formData.kode_paket }),
+
       nama_paket: formData.nama_paket || undefined,
+
       tipe_paket_id: formData.tipe_paket_id
         ? Number(formData.tipe_paket_id)
         : undefined,
 
+      total_kursi: formData.total_kursi
+        ? Number(formData.total_kursi)
+        : undefined,
+
+      airlines_id: formData.airlines_id
+        ? Number(formData.airlines_id)
+        : undefined,
+
+      jumlah_hari: formData.jumlah_hari
+        ? Number(formData.jumlah_hari)
+        : undefined,
+
+      hotel_mekka: formData.hotel_mekka
+        ? Number(formData.hotel_mekka)
+        : null,
+
+      hotel_medina: formData.hotel_medina
+        ? Number(formData.hotel_medina)
+        : null,
+
+      hotel_jeddah: formData.hotel_jeddah
+        ? Number(formData.hotel_jeddah)
+        : null,
+
+      keberangkatan_id: formData.keberangkatan_id
+        ? Number(formData.keberangkatan_id)
+        : undefined,
+
+      kota_tujuan_id: formData.kota_tujuan_id
+        ? Number(formData.kota_tujuan_id)
+        : undefined,
+
+      no_penerbangan: formData.no_penerbangan || undefined,
+
+      tanggal_berangkat:
+        formData.tanggal_berangkat || undefined,
+
+      kurs_tetap: formData.kurs_tetap
+        ? Number(formData.kurs_tetap)
+        : undefined,
+
+      hargaber1: formData.hargaber1
+        ? Number(formData.hargaber1)
+        : 0,
+
+      hargaber2: formData.hargaber2
+        ? Number(formData.hargaber2)
+        : undefined,
+
+      hargaber3: formData.hargaber3
+        ? Number(formData.hargaber3)
+        : undefined,
+
+      hargaber4: formData.hargaber4
+        ? Number(formData.hargaber4)
+        : undefined,
+
+      hargabayi: formData.hargabayi
+        ? Number(formData.hargabayi)
+        : undefined,
+
+      harga_perlengkapan: formData.harga_perlengkapan
+        ? Number(formData.harga_perlengkapan)
+        : 0,
+
+      // tetap pakai hasil upload image
       gambar: imageUrl || undefined,
     };
 
