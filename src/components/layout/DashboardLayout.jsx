@@ -123,7 +123,7 @@ function DashboardLayout() {
         <div className="p-3 border-t">
         <button
           onClick={() => {
-            localStorage.removeItem("tokenAuth");
+            sessionStorage.removeItem("tokenAuth");
             window.location.href = "/login";
           }}
           className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors shadow-sm"

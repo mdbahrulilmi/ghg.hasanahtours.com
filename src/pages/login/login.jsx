@@ -1,14 +1,33 @@
 import generateTokenAuth from '@/api/generateTokenAuth';
 import React, { useState } from 'react';
+import Swal from "sweetalert2";
 
 export default function SimpleLogin() {
   const [clientId, setClientId] = useState('');
   const [clientKey, setClientKey] = useState('');
 
   const handleSubmit = async () => {
-    const tokenAuth = await generateTokenAuth(clientId, clientKey)
-    sessionStorage.setItem("tokenAuth", tokenAuth);
-    window.location.href = '/paket-tersedia';
+    try {
+      const token = await generateTokenAuth(clientId, clientKey);
+
+      sessionStorage.setItem("tokenAuth", token);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Login berhasil",
+        text: "Selamat datang!",
+        timer: 1200,
+        showConfirmButton: false,
+      });
+
+      window.location.href = "/paket-tersedia";
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Login gagal",
+        text: err.message || "Client ID atau Client Key salah.",
+      });
+    }
   };
 
   return (
