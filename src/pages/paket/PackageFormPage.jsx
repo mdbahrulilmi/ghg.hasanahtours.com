@@ -173,6 +173,7 @@ export default function PackageFormPage() {
       const uploadJson = await uploadRes.json();
 
       if (!uploadRes.ok) {
+        console.log(uploadJson.message);
         throw new Error(uploadJson.message || "Upload gagal");
       }
 
@@ -268,10 +269,21 @@ export default function PackageFormPage() {
     const json = await res.json();
 
     if (!res.ok) {
-      throw new Error(
-        json.message ||
-          (isEdit ? "Gagal update paket" : "Gagal buat paket")
-      );
+      if (json.data) {
+        const errorMessages = Object.values(json.data)
+          .flat()
+          .join("<br>");
+
+        Swal.fire({
+          icon: "error",
+          title: "Data tidak valid",
+          html: errorMessages,
+        });
+
+        return;
+      }
+
+      throw new Error(json.message);
     }
 
     Swal.fire({
@@ -434,7 +446,10 @@ export default function PackageFormPage() {
               ${isDragActive ? "border-green-500 bg-green-50" : "border-gray-300"}
             `}
           >
-            <input {...getInputProps()} />
+            <input
+              {...getInputProps()}
+              hidden
+            />
 
             {uploading ? (
               <p>Uploading...</p>
@@ -459,7 +474,7 @@ export default function PackageFormPage() {
 
       {/* Buttons */}
       <div className="flex justify-end gap-2 mt-6">
-        <button onClick={() => navigate("/packages")} className="px-5 py-2 bg-gray-300 rounded">
+        <button onClick={() => navigate("/package")} className="px-5 py-2 bg-gray-300 rounded">
           Batal
         </button>
         <button onClick={handleSubmit} className="px-5 py-2 bg-green-600 text-white rounded">
